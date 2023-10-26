@@ -10,8 +10,8 @@ local IgnoresNPC = {
 }
 
 local DamageParts = {
-	"Candy? Sword",
 	"Laser",
+	"Hazard",
 	"Acid",
 	"Sludge",
 	"Mud",
@@ -69,7 +69,7 @@ addToggle("Anti_Damage", function()
 		end
 	end
 	for _, dmgPart in pairs(workspace:GetDescendants()) do
-		if table.find(DamageParts, dmgPart.Name) and not FindStringInStringTable(IgnoresNPC, dmgPart.Parent.Name) and not table.find(Players, dmgPart.Parent) and not table.find(Players, dmgPart.Parent.Parent) then
+		if table.find(DamageParts, dmgPart.Name) and not FindStringInStringTable(IgnoresNPC, dmgPart.Parent.Name) and not table.find(Players, dmgPart.Parent) and not table.find(Players, dmgPart.Parent.Parent) and not dmgPart.Parent.Parent:FindFirstChildOfClass("Humanoid") then
 			for _, touchDamage in pairs(dmgPart:GetDescendants()) do
 				if touchDamage:IsA("TouchTransmitter") then
 					touchDamage:Destroy()
