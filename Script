@@ -46,26 +46,6 @@ addButton("Unlocked All Classes", function()
 			ClassesValue.Value = ClassesValue.Value .. " | " .. class.Name
 		end
 	end
-	
-	local ClassButtons = game:GetService("Players").LocalPlayer.PlayerGui.ClassGui.MainFrame.ButtonContainer.ScrollFrame
-	for _, button in pairs(ClassButtons:GetChildren()) do
-		if button:IsA("ImageButton") then
-			button.MouseButton1Click:Connect(function()
-				local args = {
-					 [1] = "Brawler",
-					 [2] = "Change Value"
-				}
-				
-				game:GetService("ReplicatedStorage"):WaitForChild("ClassSetEvent"):FireServer(unpack(args))
-				local args = {
-					 [1] = button.Name,
-					 [2] = "Change Value"
-				}
-				
-				game:GetService("ReplicatedStorage"):WaitForChild("ClassSetEvent"):FireServer(unpack(args))
-			end)
-		end
-	end
 end)
 
 createPage("Main")
@@ -185,6 +165,29 @@ addToggle("Auto Teleport To Current Map", function()
 		FloatPart.Position = Pos + Vector3.new(0, 5, 0)
 		Plr.Character.HumanoidRootPart.CFrame = CFrame.new(Pos.X, Pos.Y, Pos.Z) * CFrame.new(0, 8.5, 0)
 	end
+end)
+
+pcall(function()
+	local ClassButtons = game:GetService("Players").LocalPlayer.PlayerGui.ClassGui.MainFrame.ButtonContainer.ScrollFrame
+	
+	ClassButtons.ChildAdded:Connect(function(button)
+		if button:IsA("ImageButton") then
+			button.MouseButton1Click:Connect(function()
+				local args = {
+					 [1] = "Brawler",
+					 [2] = "Change Value"
+				}
+				
+				game:GetService("ReplicatedStorage"):WaitForChild("ClassSetEvent"):FireServer(unpack(args))
+				local args = {
+					 [1] = button.Name,
+					 [2] = "Change Value"
+				}
+				
+				game:GetService("ReplicatedStorage"):WaitForChild("ClassSetEvent"):FireServer(unpack(args))
+			end)
+		end
+	end)
 end)
 
 function GetNearestEnemy()
