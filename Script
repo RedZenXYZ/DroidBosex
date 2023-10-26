@@ -1,0 +1,201 @@
+loadstring(game:HttpGet('https://raw.githubusercontent.com/RedZenXYZ/RedHub/main/Red_GuiScript'))()
+
+local Plr = game:GetService("Players").LocalPlayer
+local FloatPart = Instance.new("Part", game:GetService("Workspace"))
+
+local IgnoresNPC = {
+	"Anti",
+	"Friendly",
+	"Undead"
+}
+
+local DamageParts = {
+	"Candy? Sword",
+	"Laser",
+	"Acid",
+	"Sludge",
+	"Mud",
+	"Killer",
+	"Safe",
+	"Lava",
+	"Water",
+	"NegativeCircuit",
+	"Bullet",
+	"GigaIcicle",
+	"Hat",
+	"Head",
+	"Left Arm",
+	"Right Arm",
+	"Left Leg",
+	"Right Leg"
+}
+
+FloatPart.Size = Vector3.new(10, 0.5, 10)
+FloatPart.Anchored = true
+FloatPart.Transparency = 0.9
+
+RedGui()
+createPage("Lobby")
+
+addButton("Unlocked All Classes", function()
+	local Classes = game:GetService("Players").LocalPlayer.PlayerGui.ClassGui.ClassButtons
+	local ClassesValue = game:GetService("Players").LocalPlayer.PlayerGui.ClassGui.ClassInventory
+	
+	for _, class in pairs(Classes:GetChildren()) do
+		if class:IsA("ImageButton") then
+			ClassesValue.Value = ClassesValue.Value .. " | " .. class.Name
+		end
+	end
+end)
+
+createPage("Main")
+
+addButton("Kill Friendly Droid", function()
+	for _, droid in pairs(workspace:GetDescendants()) do
+		if droid:IsA("Model") and droid.Name:find("Friendly") and droid:FindFirstChildOfClass("Humanoid") and droid:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+			droid:FindFirstChildOfClass("Humanoid").Health = 0
+		end
+	end
+end)
+
+addToggle("Anti_Damage", function()
+	local Players = {}
+	for _, plr in pairs(game:GetService("Players"):GetPlayers()) do
+		table.insert(Players, plr.Character)
+	end
+	for _, spike in pairs(workspace:GetDescendants()) do
+		if spike.Name == "GigaIcicle" then
+			spike:Destroy()
+		end
+	end
+	for _, dmgPart in pairs(workspace:GetDescendants()) do
+		if table.find(DamageParts, dmgPart.Name) and not FindStringInStringTable(IgnoresNPC, dmgPart.Parent.Name) and not table.find(Players, dmgPart.Parent) and not table.find(Players, dmgPart.Parent.Parent) then
+			for _, touchDamage in pairs(dmgPart:GetDescendants()) do
+				if touchDamage:IsA("TouchTransmitter") then
+					touchDamage:Destroy()
+				end
+			end
+		end
+	end
+end)
+
+addToggle("Auto Kill", function()
+	local Players = {}
+	for _, plr in pairs(game:GetService("Players"):GetPlayers()) do
+		table.insert(Players, plr.Character)
+	end
+	for _, Hum in pairs(game:GetService("Workspace"):GetDescendants()) do
+		if Hum:IsA("Humanoid") and not FindStringInStringTable(IgnoresNPC, Hum.Parent.Name) and Hum.Health ~= 0 and not table.find(Players, Hum.Parent) then
+			wait()
+			Hum.Health = 0
+			wait()
+			Hum.Health = 1
+			wait()
+		end
+	end
+end)
+
+addToggle("Auto Attack", function()
+	local Sword = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool")
+	local Handle = Sword:FindFirstChild("Handle")
+	
+	if Sword:FindFirstChild("Handle") and Sword:FindFirstChild("Handle"):FindFirstChildOfClass("TouchTransmitter") then
+		for _, enemy in pairs(game:GetService("Workspace").Room.Enemies:GetChildren()) do
+			if enemy:IsA("Model") and not FindStringInStringTable(IgnoresNPC, enemy.Name) and enemy:FindFirstChildOfClass("Humanoid").Health ~= 0 and enemy:FindFirstChild("HumanoidRootPart") then
+				firetouchinterest(Handle, enemy:FindFirstChild("HumanoidRootPart"), 0)
+				firetouchinterest(Handle, enemy:FindFirstChild("HumanoidRootPart"), 1)
+			end
+		end
+	end
+end)
+
+addToggle("Get Circuit ", function()
+	for _, circuit in pairs(game:GetService("Workspace"):GetDescendants()) do
+		if not circuit.Name:lower():find("negative") and circuit.Name:lower():find("circuit") and circuit:FindFirstChildOfClass("TouchTransmitter") then
+			firetouchinterest(circuit, Plr.Character.HumanoidRootPart, 0)
+		end
+	end
+end)
+
+addToggle("Click Button", function()
+	for _, button in pairs(game:GetService("Workspace"):GetDescendants()) do
+		if button.Name:lower():find("button") and button:FindFirstChildOfClass("ClickDetector") then
+			wait(0.1)
+			fireclickdetector(button:FindFirstChildOfClass("ClickDetector"))
+		end
+	end
+end)
+
+addToggle("Get Dropped Item", function()
+	for _, item in pairs(game:GetService("Workspace"):GetDescendants()) do
+		if item:IsA("Tool") and not item.Parent:FindFirstChildOfClass("Humanoid") and item:FindFirstChild("Handle") and item:FindFirstChild("Handle"):FindFirstChildOfClass("TouchTransmitter") then
+			firetouchinterest(item.Handle, Plr.Character.HumanoidRootPart, 0)
+			firetouchinterest(item.Handle, Plr.Character.HumanoidRootPart, 1)
+		end
+	end
+end)
+
+createPage("Skills")
+
+addToggle("Skill 1", function()
+	game:GetService("ReplicatedStorage").ClassEvent:FireServer(1)
+end)
+
+addToggle("Skill 2", function()
+	game:GetService("ReplicatedStorage").ClassEvent:FireServer(2)
+end)
+
+createPage("Map")
+
+local PosType = addSelected("Under")
+
+addClickSelect("Up")
+addClickSelect("Under")
+addClickSelect("Enemy")
+
+addToggle("Auto Teleport To Current Map", function()
+	if PosType.Button.Text == "Under" then
+		FloatPart.Position = game:GetService("Workspace"):FindFirstChild("Room").Floor.Position + Vector3.new(0, -10, 0)
+		Plr.Character.HumanoidRootPart.CFrame = game:GetService("Workspace"):FindFirstChild("Room").Floor.CFrame * CFrame.new(0, -6.5, 0)
+	elseif PosType.Button.Text == "Up" then
+		FloatPart.Position = game:GetService("Workspace"):FindFirstChild("Room").Floor.Position + Vector3.new(0, 30, 0)
+		Plr.Character.HumanoidRootPart.CFrame = game:GetService("Workspace"):FindFirstChild("Room").Floor.CFrame * CFrame.new(0, 33.5, 0)
+	elseif PosType.Button.Text == "Enemy" then
+		local Pos = GetNearestEnemy().PrimaryPart.Position
+		FloatPart.Position = Pos + Vector3.new(0, 5, 0)
+		Plr.Character.HumanoidRootPart.CFrame = CFrame.new(Pos.X, Pos.Y, Pos.Z) * CFrame.new(0, 8.5, 0)
+	end
+end)
+
+function GetNearestEnemy()
+	local player = game:GetService("Players").LocalPlayer
+	if player.Character then
+		local character = player.Character
+		ohVector32 = character.PrimaryPart.Position
+	else
+		return
+	end
+	local closestEnemy, closestDistance
+	for _, p in pairs(workspace.Room.Enemies:GetChildren()) do
+		if p and p:FindFirstChildOfClass("Humanoid") and p:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+			local distance = (ohVector32 - p.PrimaryPart.Position).Magnitude
+			if not closestDistance or distance < closestDistance then
+				closestDistance = distance
+				closestEnemy = p
+			end
+		end
+	end
+	if closestEnemy then
+		return closestEnemy
+	end
+end
+
+function FindStringInStringTable(Table, String)
+	for _, string in pairs(Table) do
+		if String:find(string) then
+			return true
+		end
+	end
+	
+	return false
+end
